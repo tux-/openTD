@@ -45,7 +45,10 @@ jQuery(function($) {
 	stoneImage.src = 'gfx/stone.png';
 
 	var mobImage = new Image();
-	mobImage.src = 'gfx/mob.png';
+	mobImage.src = 'gfx/tank.png';
+	mobImage.onload = function() {
+		console.log(mobImage.width);
+	}
 
 	Mob = function () {
 		this.x = -40;
@@ -54,9 +57,10 @@ jQuery(function($) {
 		this.life = 100;
 		this.direction = 1;
 		this.lastMove = 0;
+		this.lastSprite = 0;
 
 		this.draw = function () {
-			context.drawImage(mobImage, this.x, this.y, tileHW, tileHW);
+			context.drawImage(mobImage, this.lastSprite * tileHW, this.direction * tileHW, tileHW, tileHW, this.x, this.y, tileHW, tileHW);
 		};
 	}
 
@@ -257,9 +261,11 @@ jQuery(function($) {
 	var mobs = [];
 
 	var update = function () {
+		//if (mobs.length === 0) {
 		if (frame % 120 === 0) {
 			newMob = new Mob();
 			newMob.speed = Math.floor((Math.random() * 1000) + 1) / 100;
+			//newMob.speed = 1;
 			console.log("Creating new mob with speed: " + newMob.speed);
 			mobs.push(newMob);
 		}
@@ -271,6 +277,14 @@ jQuery(function($) {
 		}
 		frame++;
 		for (var i = 0; i < mobs.length; i++) {
+			if (frame % 5 === 0) {
+			if (mobs[i].lastSprite === 2) {
+				mobs[i].lastSprite = 0;
+			}
+			else {
+				mobs[i].lastSprite++;
+			}
+			}
 			moveMob(mobs[i]);
 		}
 	}
