@@ -36,7 +36,7 @@ jQuery(function($) {
 	var verticalTiles = 10;
 
 	var bgImage = new Image();
-	bgImage.src = 'gfx/backg.png';
+	bgImage.src = 'gfx/backg2.png';
 
 	var roadImage = new Image();
 	roadImage.src = 'gfx/road.png';
@@ -295,8 +295,8 @@ jQuery(function($) {
 		}
 	}
 	var draw = function () {
-		context.clearRect(0, 0, 600, 400);
-		context.drawImage(bgImage, 0, 0, tileHW * horizontalTiles, tileHW * verticalTiles);
+		context.clearRect(0, 0, wrapper.width(), wrapper.height());
+		context.drawImage(bgImage, 0, 0, bgImage.width, bgImage.height);
 
 		createMap();
 		for (var i = 0; i < mobs.length; i++) {
