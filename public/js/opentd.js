@@ -46,9 +46,6 @@ jQuery(function($) {
 
 	var mobImage = new Image();
 	mobImage.src = 'gfx/tank.png';
-	mobImage.onload = function() {
-		console.log(mobImage.width);
-	}
 
 	Mob = function () {
 		this.x = -40;
@@ -60,7 +57,11 @@ jQuery(function($) {
 		this.lastSprite = 0;
 
 		this.draw = function () {
-			context.drawImage(mobImage, this.lastSprite * tileHW, this.direction * tileHW, tileHW, tileHW, this.x, this.y, tileHW, tileHW);
+			var spriteY = 0;
+			if (mobImage.height > tileHW) {
+				spriteY = this.direction * tileHW;
+			}
+			context.drawImage(mobImage, this.lastSprite * tileHW, spriteY, tileHW, tileHW, this.x, this.y, tileHW, tileHW);
 		};
 	}
 
@@ -185,6 +186,10 @@ jQuery(function($) {
 	var frame = 0;
 
 	var moveMob = function (mob, steps) {
+		var startPos = {};
+		startPos.x = Math.round(mob.x);
+		startPos.y = Math.round(mob.y);
+
 		if (steps === undefined) {
 			steps = mob.speed;
 		}
@@ -256,16 +261,25 @@ jQuery(function($) {
 		if (mob.x > (horizontalTiles * tileHW)) {
 			mob.life = 0;
 		}
+		else if ((Math.round(mob.x) !== startPos.x) || (Math.round(mob.y) !== startPos.y)) {
+			if (mobImage.width === 0) {
+				/* Hack if image not yet loaded, should be fixed in a loader later on. */
+			}
+			else if (mob.lastSprite === (mobImage.width - tileHW) / tileHW) {
+				mob.lastSprite = 0;
+			}
+			else {
+				mob.lastSprite++;
+			}
+		}
 	}
 
 	var mobs = [];
 
 	var update = function () {
-		//if (mobs.length === 0) {
 		if (frame % 120 === 0) {
 			newMob = new Mob();
 			newMob.speed = Math.floor((Math.random() * 1000) + 1) / 100;
-			//newMob.speed = 1;
 			console.log("Creating new mob with speed: " + newMob.speed);
 			mobs.push(newMob);
 		}
@@ -277,14 +291,6 @@ jQuery(function($) {
 		}
 		frame++;
 		for (var i = 0; i < mobs.length; i++) {
-			if (frame % 5 === 0) {
-			if (mobs[i].lastSprite === 2) {
-				mobs[i].lastSprite = 0;
-			}
-			else {
-				mobs[i].lastSprite++;
-			}
-			}
 			moveMob(mobs[i]);
 		}
 	}
